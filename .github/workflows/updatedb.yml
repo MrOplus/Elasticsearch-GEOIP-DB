@@ -35,9 +35,10 @@ jobs:
         ls -la ~/elastic
         cd ~/elastic
         sudo /usr/share/elasticsearch/bin/elasticsearch-geoip -s ~/elastic
+        tar -cvf ~/filter_geo.tar .
+        sha1sum ~/filter_geo.tar > ~/filter_geo.tar.sha1
         ls -la
-        tar -cvf filter_geo.tar .
-        sha1sum filter_geo.tar > filter_geo.tar.sha1
+        pwd
         
 
     - name: Create Release
@@ -56,6 +57,6 @@ jobs:
       with:
         name: filter_geo
         path: |
-          ~/elastic/filter_geo.ta
-          ~/elastic/filter_geo.tar.sha1
+          ~/filter_geo.tar
+          ~/filter_geo.tar.sha1
         
