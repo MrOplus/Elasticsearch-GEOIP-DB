@@ -31,7 +31,7 @@ jobs:
         mkdir ~/elastic
         tar -xvf GeoLite2-ASN.tar.gz
         tar -xvf GeoLite2-City.tar.gz
-        find ~/ -name "*.mmdb" -exec cp "{}" /elastic  \; 
+        find ~/ -name "*.mmdb" -exec cp "{}" ~/elastic  \; 
         ls -la ~/elastic
         cd ~/elastic
         sudo /usr/share/elasticsearch/bin/elasticsearch-geoip -s ~/elastic
