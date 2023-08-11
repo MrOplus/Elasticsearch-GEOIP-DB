@@ -1,0 +1,50 @@
+name: updatedb
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
+
+jobs:
+  download-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Download File
+      env:
+        LICENSE_KEY: ${{ secrets.LICENSE_KEY }}
+      run: |
+        cd ~/
+        wget -O GeoLite2-ASN.tar.gz "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=$LICENSE_KEY&suffix=tar.gz"
+        wget -O GeoLite2-City.tar.gz "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=$LICENSE_KEY&suffix=tar.gz"
+        curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+        echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
+        apt update && apt install elasticsearch -y
+        mkdir /elastic
+        tar -xvf GeoLite2-ASN.tar.gz
+        tar -xvf GeoLite2-City.tar.gz
+        find ~/ -name "*.mmdb" -exec cp "{}" /elastic  \; 
+        ls -la /elastic
+        cd /elastic
+        /usr/share/elasticsearch/bin/elasticsearch-geoip -s /elastic
+        ls -la
+        
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: daily-release
+        release_name: Daily Release
+        body: Daily release with downloaded file
+
+#     - name: Upload Artifact
+#       id: upload-artifact
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: downloaded-file
+#         path: ./downloaded_file.zip
