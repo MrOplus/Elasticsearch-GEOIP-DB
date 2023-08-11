@@ -10,6 +10,8 @@ on:
         description: "manual"
         required: false
         default: "true"
+  schedule:
+    - cron: '0 0 * * *'
 jobs:
   download-upload:
     runs-on: ubuntu-latest
@@ -35,6 +37,7 @@ jobs:
         ls -la ~/elastic
         cd ~/elastic
         sudo /usr/share/elasticsearch/bin/elasticsearch-geoip -s ~/elastic
+        rm -rf ~/elastic/*.mmdb
         tar -cvf ~/filter_geo.tar .
         sha1sum ~/filter_geo.tar > ~/filter_geo.tar.sha1
         ls -la
@@ -49,14 +52,25 @@ jobs:
       with:
         tag_name: daily-release
         release_name: Daily Release
-        body: Daily release with downloaded file
-
-    - name: Upload Artifact
-      id: upload-artifact
-      uses: actions/upload-artifact@v3
+        body: Dialy ip filter release
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: sekwah41/upload-release-assets@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: filter_geo
-        path: |
-          ~/filter_geo.tar
-          ~/filter_geo.tar.sha1
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: ~/filter_geo.tar
+        asset_name: filter_geo.tar
+        asset_content_type: application/x-tar
+    - name: Upload Release Asset
+      id: upload-release-asset-hash
+      uses: sekwah41/upload-release-assets@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: ~/filter_geo.tar.sha1
+        asset_name: filter_geo.tar.sha1
+        asset_content_type: text/plain
         
