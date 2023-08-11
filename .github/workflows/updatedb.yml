@@ -34,7 +34,7 @@ jobs:
         find ~/ -name "*.mmdb" -exec cp "{}" /elastic  \; 
         ls -la ~/elastic
         cd ~/elastic
-        /usr/share/elasticsearch/bin/elasticsearch-geoip -s ~/elastic
+        sudo /usr/share/elasticsearch/bin/elasticsearch-geoip -s ~/elastic
         ls -la
         tar -cvf filter_geo.tar .
         sha1sum filter_geo.tar > filter_geo.tar.sha1
