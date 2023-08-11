@@ -28,14 +28,16 @@ jobs:
         curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
         echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
         sudo apt update &&  sudo apt install elasticsearch -y
-        mkdir /elastic
+        mkdir ~/elastic
         tar -xvf GeoLite2-ASN.tar.gz
         tar -xvf GeoLite2-City.tar.gz
         find ~/ -name "*.mmdb" -exec cp "{}" /elastic  \; 
-        ls -la /elastic
-        cd /elastic
-        /usr/share/elasticsearch/bin/elasticsearch-geoip -s /elastic
+        ls -la ~/elastic
+        cd ~/elastic
+        /usr/share/elasticsearch/bin/elasticsearch-geoip -s ~/elastic
         ls -la
+        tar -cvf filter_geo.tar .
+        sha1sum filter_geo.tar > filter_geo.tar.sha1
         
 
     - name: Create Release
@@ -48,9 +50,12 @@ jobs:
         release_name: Daily Release
         body: Daily release with downloaded file
 
-#     - name: Upload Artifact
-#       id: upload-artifact
-#       uses: actions/upload-artifact@v2
-#       with:
-#         name: downloaded-file
-#         path: ./downloaded_file.zip
+    - name: Upload Artifact
+      id: upload-artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: filter_geo
+        path: |
+          ~/elastic/filter_geo.ta
+          ~/elastic/filter_geo.tar.sha1
+        
