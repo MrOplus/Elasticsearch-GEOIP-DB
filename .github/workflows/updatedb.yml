@@ -59,8 +59,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ~/filter_geo.tar
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: /home/runner/filter_geo.tar
         asset_name: filter_geo.tar
         asset_content_type: application/x-tar
     - name: Upload Release Asset
@@ -69,8 +69,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ~/filter_geo.tar.sha1
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: /home/runner/filter_geo.tar.sha1
         asset_name: filter_geo.tar.sha1
         asset_content_type: text/plain
         
