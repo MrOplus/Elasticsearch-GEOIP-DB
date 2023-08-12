@@ -43,16 +43,23 @@ jobs:
         ls -la
         pwd
         
-
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    - name: Test with environment variables
+      run: echo $TAG_NAME - $RELEASE_NAME
+      env:
+        TAG_NAME: daily-release-${{ steps.date.outputs.date }}
+        RELEASE_NAME: daily-release-${{ steps.date.outputs.date }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: daily-release
-        release_name: Daily Release
-        body: Dialy ip filter release
+        tag_name: daily-release-${{ steps.date.outputs.date }}
+        release_name: daily-release-${{ steps.date.outputs.date }}
+        body: Dialy ip filter release ${{ steps.date.outputs.date }}
     - name: Upload Release Asset
       id: upload-release-asset
       uses: sekwah41/upload-release-assets@v1
